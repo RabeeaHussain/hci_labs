@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitts's Law Demo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .page {
+      width: min(920px, 100%);
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+      padding: 28px;
+      display: grid;
+      gap: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 2.4vw, 2.5rem);
+      text-align: center;
+    }
+
+    .intro {
+      display: grid;
+      gap: 12px;
+      line-height: 1.5;
+      color: #334155;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #fff;
+      background: #2563eb;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      background: #1d4ed8;
+    }
+
+    .demo-area {
+      position: relative;
+      min-height: 340px;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      overflow: hidden;
+    }
+
+    .start-zone {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 104px;
+      height: 104px;
+      transform: translate(-50%, -50%);
+      border: 3px dashed #64748b;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #475569;
+      font-size: 0.95rem;
+      text-align: center;
+      padding: 10px;
+      pointer-events: none;
+    }
+
+    .target {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #f97316 15%, #fb923c 50%, #ea580c 90%);
+      box-shadow: 0 12px 28px rgba(248, 113, 20, 0.28);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .status {
+      display: grid;
+      gap: 10px;
+      padding: 18px 20px;
+      border: 1px solid #cbd5e1;
+      border-radius: 18px;
+      background: #f8fafc;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #0f172a;
+      font-size: 0.92rem;
+    }
+
+    .metric span {
+      font-size: 1.35rem;
+      color: #1d4ed8;
+    }
+
+    .results {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    td {
+      color: #475569;
+    }
+
+    @media (max-width: 700px) {
+      .demo-area {
+        min-height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Fitts's Law Demo</h1>
+
+    <div class="intro">
+      <p>Fitts's Law predicts how long it takes to point to a target based on how far away it is and how large it is. Click the orange target from the center start zone as quickly and accurately as you can.</p>
+      <p>The demo uses different <strong>distance</strong> and <strong>target size</strong> combinations. After each click, the program records the time and shows your movement time alongside the Fitts' law index of difficulty.</p>
+    </div>
+
+    <div class="controls">
+      <button id="startButton">Start Trial</button>
+      <button id="resetButton">Reset</button>
+      <button id="explainButton">Show Formula</button>
+    </div>
+
+    <div class="demo-area" id="demoArea">
+      <div class="start-zone">Start here</div>
+    </div>
+
+    <div class="status">
+      <div class="stats-grid">
+        <div class="metric"><strong>Trial</strong><span id="trialCount">0 / 8</span></div>
+        <div class="metric"><strong>Current Time</strong><span id="currentTime">— ms</span></div>
+        <div class="metric"><strong>Index of Difficulty</strong><span id="currentId">—</span></div>
+      </div>
+      <div class="results">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Distance (px)</th>
+              <th>Size (px)</th>
+              <th>ID</th>
+              <th>Time (ms)</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const demoArea = document.getElementById('demoArea');
+    const startButton = document.getElementById('startButton');
+    const resetButton = document.getElementById('resetButton');
+    const explainButton = document.getElementById('explainButton');
+    const trialCount = document.getElementById('trialCount');
+    const currentTime = document.getElementById('currentTime');
+    const currentId = document.getElementById('currentId');
+    const resultsBody = document.getElementById('resultsBody');
+
+    const trials = [
+      { distance: 80, size: 32 },
+      { distance: 80, size: 64 },
+      { distance: 140, size: 32 },
+      { distance: 140, size: 64 },
+      { distance: 220, size: 28 },
+      { distance: 220, size: 54 },
+      { distance: 300, size: 24 },
+      { distance: 300, size: 48 }
+    ];
+
+    let activeTarget = null;
+    let startTime = 0;
+    let currentTrial = 0;
+    let results = [];
+
+    function calculateId(distance, size) {
+      return Math.log2(distance / size + 1).toFixed(2);
+    }
+
+    function updateStatus() {
+      trialCount.textContent = `${currentTrial} / ${trials.length}`;
+      if (currentTrial === 0) {
+        currentTime.textContent = '— ms';
+        currentId.textContent = '—';
+      }
+    }
+
+    function clearTarget() {
+      if (activeTarget) {
+        activeTarget.remove();
+        activeTarget = null;
+      }
+    }
+
+    function placeTarget() {
+      clearTarget();
+      const trial = trials[currentTrial - 1];
+      const target = document.createElement('div');
+      target.className = 'target';
+      target.style.width = `${trial.size}px`;
+      target.style.height = `${trial.size}px`;
+      target.textContent = 'Click';
+
+      const areaWidth = demoArea.clientWidth;
+      const areaHeight = demoArea.clientHeight;
+      const centerX = areaWidth / 2;
+      const centerY = areaHeight / 2;
+      const angle = Math.random() * Math.PI * 2;
+      const x = centerX + Math.cos(angle) * trial.distance - trial.size / 2;
+      const y = centerY + Math.sin(angle) * trial.distance - trial.size / 2;
+
+      target.style.left = `${Math.max(8, Math.min(areaWidth - trial.size - 8, x))}px`;
+      target.style.top = `${Math.max(8, Math.min(areaHeight - trial.size - 8, y))}px`;
+
+      target.addEventListener('click', () => {
+        const elapsed = Math.round(performance.now() - startTime);
+        const id = calculateId(trial.distance, trial.size);
+        currentTime.textContent = `${elapsed} ms`;
+        currentId.textContent = id;
+        results.push({ index: currentTrial, distance: trial.distance, size: trial.size, id, time: elapsed });
+        appendResult({ index: currentTrial, distance: trial.distance, size: trial.size, id, time: elapsed });
+        clearTarget();
+        if (currentTrial < trials.length) {
+          startButton.textContent = 'Next Trial';
+        } else {
+          startButton.textContent = 'Restart';
+        }
+      });
+
+      demoArea.appendChild(target);
+      activeTarget = target;
+      startTime = performance.now();
+    }
+
+    function appendResult(row) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.index}</td>
+        <td>${row.distance}</td>
+        <td>${row.size}</td>
+        <td>${row.id}</td>
+        <td>${row.time}</td>
+      `;
+      resultsBody.appendChild(tr);
+    }
+
+    startButton.addEventListener('click', () => {
+      if (currentTrial >= trials.length) {
+        currentTrial = 0;
+        results = [];
+        resultsBody.innerHTML = '';
+        currentTime.textContent = '— ms';
+        currentId.textContent = '—';
+      }
+      currentTrial += 1;
+      updateStatus();
+      placeTarget();
+      startButton.textContent = 'Trial in progress';
+    });
+
+    resetButton.addEventListener('click', () => {
+      currentTrial = 0;
+      results = [];
+      resultsBody.innerHTML = '';
+      clearTarget();
+      startButton.textContent = 'Start Trial';
+      currentTime.textContent = '— ms';
+      currentId.textContent = '—';
+      updateStatus();
+    });
+
+    explainButton.addEventListener('click', () => {
+      alert("Fitts's Law: MT = a + b * log2(D/W + 1)\n\nMT = movement time\nD = distance to target\nW = width of target\nThe higher the index of difficulty, the slower the movement time.");
+    });
+
+    window.addEventListener('resize', () => {
+      if (activeTarget) {
+        clearTarget();
+      }
+    });
+
+    updateStatus();
+  </script>
+</body>
+</html>

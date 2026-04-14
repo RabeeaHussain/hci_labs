@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HCI Lab 01 – Norman, GOMS & KLM</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            background-color: #ead7af;
+            color: #222;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #398bdc;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: #1f71c4;
+            font-size: 22px;
+        }
+
+        h3 {
+            color: #1d78b9;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        section {
+            margin-bottom: 30px;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+        }
+
+        .reference {
+            font-size: 14px;
+            color: #444;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Human Computer Interaction – Lab 01</h1>
+    <p>
+        This website analyzes interaction using Norman’s Action Cycle,
+        GOMS, and the Keystroke-Level Model (KLM).
+    </p>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="#norman">Norman’s Action Cycle</a></li>
+        <li><a href="#goms">GOMS Model</a></li>
+        <li><a href="#klm">KLM</a></li>
+    </ul>
+</nav>
+
+<main>
+
+    <!-- NORMAN -->
+    <section id="norman">
+        <h2>Norman’s Action Cycle</h2>
+
+        <article>
+            <h3>Seven Stages of Action</h3>
+            <ol>
+                <li>Forming the goal</li>
+                <li>Forming the intention</li>
+                <li>Specifying the action</li>
+                <li>Executing the action</li>
+                <li>Perceiving the system state</li>
+                <li>Interpreting the system state</li>
+                <li>Evaluating the outcome</li>
+            </ol>
+        </article>
+
+        <article>
+            <h3>Gulfs of Execution and Evaluation</h3>
+            <ul>
+                <li>
+                    <strong>Gulf of Execution:</strong>
+                    Difficulty in translating goals into actions supported by the system.
+                </li>
+                <li>
+                    <strong>Gulf of Evaluation:</strong>
+                    Difficulty in understanding system feedback and outcomes.
+                </li>
+            </ul>
+        </article>
+
+        <article>
+            <h3>Application: Automatic Syringe</h3>
+            <p>
+                In the automatic syringe, the gulf of execution increases when dosage
+                controls are unclear. The gulf of evaluation appears when feedback
+                does not clearly confirm the delivered dosage.
+            </p>
+        </article>
+    </section>
+
+    <!-- GOMS -->
+    <section id="goms">
+        <h2>GOMS Model</h2>
+
+        <article>
+            <h3>Core Components</h3>
+            <ul>
+                <li><strong>Goals:</strong> What the user wants to achieve</li>
+                <li><strong>Operators:</strong> Actions available to the user</li>
+                <li><strong>Methods:</strong> Sequences of operators</li>
+                <li><strong>Selection Rules:</strong> Criteria for choosing methods</li>
+            </ul>
+        </article>
+
+        <article>
+            <h3>Application: Toggle Switch</h3>
+            <p>
+                For a toggle switch, the goal is to change system state.
+                Operators include pointing and clicking.
+                The method is short and consistent, reducing cognitive load.
+            </p>
+        </article>
+
+        <article>
+            <h3>Comparison with Norman</h3>
+            <p>
+                While Norman’s model focuses on cognitive stages and feedback,
+                GOMS emphasizes task structure and efficiency.
+            </p>
+        </article>
+    </section>
+
+    <!-- KLM -->
+    <section id="klm">
+        <h2>Keystroke-Level Model (KLM)</h2>
+
+        <article>
+            <h3>KLM Operators</h3>
+            <ul>
+                <li><strong>K:</strong> Keystroke or button press</li>
+                <li><strong>P:</strong> Pointing</li>
+                <li><strong>H:</strong> Homing</li>
+                <li><strong>M:</strong> Mental preparation</li>
+                <li><strong>R:</strong> System response time</li>
+            </ul>
+        </article>
+
+        <article>
+            <h3>Execution-Time Prediction</h3>
+            <p>
+                KLM predicts task completion time by summing operator durations.
+                This helps compare interaction efficiency objectively.
+            </p>
+        </article>
+
+        <article>
+            <h3>Application: Who Paid Problem</h3>
+            <p>
+                In the “Who Paid” problem, excessive mental (M) operators increase
+                task time, highlighting inefficiency compared to simpler interfaces.
+            </p>
+        </article>
+    </section>
+
+</main>
+
+<footer>
+    <p class="reference">
+        References:<br>
+        Alan Dix et al., <em>Human–Computer Interaction</em>, 3rd Edition<br>
+        Donald Norman, <em>The Design of Everyday Things</em>
+    </p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="ShneidermanLabcss.css">
+</head>
+<body>
+
+  <div class="lab-tag">Lab 07 — Shneiderman's 8 Golden Rules</div>
+  <h1>Interactive Principles Demo</h1>
+  <p class="subtitle">Perform actions to trigger each rule</p>
+
+  <div class="container">
+
+    <!-- Rule Tags -->
+    <div class="tags">
+      <div class="tag" id="tag-r1"><div class="dot d1"></div> R1 Consistency</div>
+      <div class="tag" id="tag-r2"><div class="dot d2"></div> R2 Shortcuts</div>
+      <div class="tag" id="tag-r3"><div class="dot d3"></div> R3 Feedback</div>
+      <div class="tag" id="tag-r4"><div class="dot d4"></div> R4 Closure</div>
+      <div class="tag" id="tag-r5"><div class="dot d5"></div> R5 Error Prevention</div>
+      <div class="tag" id="tag-r6"><div class="dot d6"></div> R6 Undo</div>
+      <div class="tag" id="tag-r7"><div class="dot d7"></div> R7 Control</div>
+      <div class="tag" id="tag-r8"><div class="dot d8"></div> R8 Memory Load</div>
+    </div>
+
+    <!-- Form -->
+    <div class="field">
+      <label>Username</label>
+      <input id="username" type="text" placeholder="Type a username…" maxlength="20" autocomplete="off" />
+      <div class="hint" id="hint-username"> </div>
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="email" type="text" placeholder="user@example.com" autocomplete="off" />
+      <div class="hint" id="hint-email"> </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Min 6 characters…" autocomplete="off" />
+      <div class="hint" id="hint-password"> </div>
+    </div>
+
+    <div id="status"> </div>
+
+    <div class="btns">
+      <button id="submitBtn" onclick="onSubmit()">Submit</button>
+      <button id="undoBtn"   onclick="onUndo()" disabled>↺ Undo</button>
+    </div>
+
+    <div class="shortcut-hint">Tip: press <kbd>Ctrl+Z</kbd> to undo · <kbd>Ctrl+Enter</kbd> to submit</div>
+
+  </div>
+
+  <script src="Shneidermanjs.js"></script>
+</body>
+</html>

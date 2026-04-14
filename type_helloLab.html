@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .lab-tag {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }
+    .subtitle {
+      font-size: 0.65rem;
+      color: #888;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .container {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      padding: 30px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* GOMS Tags */
+    .tags-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.3;
+      transition: opacity 0.3s, background 0.3s, border-color 0.3s;
+    }
+    .tag .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: box-shadow 0.3s;
+    }
+    .tag.active { opacity: 1; border-color: rgba(var(--cr), 0.3); background: rgba(var(--cr), 0.07); }
+    .tag.glow .dot { box-shadow: 0 0 8px var(--c); }
+
+    .tag-goal       { --c: #e63946; --cr: 230,57,70;   }
+    .tag-operators  { --c: #2a9d8f; --cr: 42,157,143;  }
+    .tag-methods    { --c: #f4a261; --cr: 244,162,97;   }
+    .tag-selection  { --c: #6a4c93; --cr: 106,76,147;  }
+    .tag .dot { background: var(--c); }
+
+    /* Task description */
+    .task-desc {
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.72rem;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .task-desc strong { color: #1a1a1a; display: block; margin-bottom: 4px; }
+
+    /* Text input area — the actual interactive element */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    #textInput {
+      width: 100%;
+      padding: 12px 14px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.25s;
+      color: #1a1a1a;
+    }
+    #textInput:focus { border-color: #1a1a1a; }
+    #textInput.done  { border-color: #2a9d8f; background: rgba(42,157,143,0.04); }
+
+    #submitBtn {
+      width: 100%;
+      padding: 13px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: #1a1a1a;
+      color: #fff;
+      border: 2px solid #1a1a1a;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: opacity 0.2s;
+      margin-bottom: 14px;
+    }
+    #submitBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #submitBtn:active:not(:disabled) { transform: scale(0.98); }
+
+    /* Status */
+    #status {
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      background: #f9f9f9;
+      font-size: 0.73rem;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      transition: border-color 0.3s, background 0.3s;
+      margin-bottom: 14px;
+      color: #555;
+    }
+
+    /* Progress */
+    .prog-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.58rem;
+      color: #aaa;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .prog-track { height: 3px; background: #eee; border-radius: 2px; }
+    .prog-bar {
+      height: 100%;
+      background: #1a1a1a;
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.3s;
+    }
+
+    /* Reset */
+    #resetBtn {
+      margin-top: 14px;
+      width: 100%;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      background: #fff;
+      color: #1a1a1a;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #resetBtn:hover { background: #f5f5f5; }
+
+    /* Char counter */
+    .char-count {
+      font-size: 0.6rem;
+      color: #bbb;
+      text-align: right;
+      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+    }
+    .char-count.match { color: #2a9d8f; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div style="text-align:center; margin-bottom:32px;">
+    <div class="lab-tag">Lab 05 — GOMS Model</div>
+    <h1>Type "Hello" Task</h1>
+    <p class="subtitle">Goal · Operators · Methods · Selection</p>
+  </div>
+
+  <div class="container">
+
+    <!-- GOMS Tags -->
+    <div class="tags-grid">
+      <div class="tag tag-goal      active" id="tag-goal">      <div class="dot"></div> Goal</div>
+      <div class="tag tag-operators"        id="tag-operators"> <div class="dot"></div> Operators</div>
+      <div class="tag tag-methods"          id="tag-methods">   <div class="dot"></div> Methods</div>
+      <div class="tag tag-selection"        id="tag-selection"> <div class="dot"></div> Selection</div>
+    </div>
+
+    <!-- Task instruction -->
+    <div class="task-desc">
+      <strong>Your task — type the word "Hello" exactly</strong>
+      Watch the GOMS tags above light up as each principle activates during your interaction.
+    </div>
+
+    <!-- Interactive input -->
+    <div class="input-wrap">
+      <input
+        id="textInput"
+        type="text"
+        placeholder='Type "Hello" here…'
+        oninput="onType()"
+        onfocus="onFocus()"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <div class="char-count" id="charCount">0 / 5 characters</div>
+
+    <button id="submitBtn" onclick="onSubmit()" disabled>Submit</button>
+
+    <div id="status">Click the input field above to begin…</div>
+
+    <div class="prog-label">
+      <span>Task progress</span>
+      <span id="progLabel">0%</span>
+    </div>
+    <div class="prog-track"><div class="prog-bar" id="progBar"></div></div>
+
+    <button id="resetBtn" onclick="onReset()">↺ Reset</button>
+
+  </div>
+
+<script>
+  const TARGET = 'Hello';
+  let focused = false;
+  let typed   = false;
+  let submitted = false;
+
+  const input     = document.getElementById('textInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const status    = document.getElementById('status');
+  const progBar   = document.getElementById('progBar');
+  const progLabel = document.getElementById('progLabel');
+  const charCount = document.getElementById('charCount');
+
+  function pulse(id) {
+    const el = document.getElementById('tag-' + id);
+    el.classList.add('active', 'glow');
+    setTimeout(() => el.classList.remove('glow'), 700);
+  }
+
+  function setProgress(pct, color) {
+    progBar.style.width = pct + '%';
+    progBar.style.background = color || '#1a1a1a';
+    progLabel.textContent = Math.round(pct) + '%';
+  }
+
+  // GOAL is always active — it's set from the start
+  // shown as active by default in HTML
+
+  function onFocus() {
+    if (focused) return;
+    focused = true;
+
+    // OPERATORS fire — user has picked up the keyboard/mouse to act
+    pulse('operators');
+    status.textContent = '⌨️ Operators active — you chose keyboard input to reach your goal';
+    setProgress(25);
+  }
+
+  function onType() {
+    const val = input.value;
+    const len = Math.min(val.length, TARGET.length);
+
+    charCount.textContent = `${val.length} / ${TARGET.length} characters`;
+    charCount.className = val === TARGET ? 'char-count match' : 'char-count';
+
+    // METHODS fire on first keystroke — the method is "typing character by character"
+    if (!typed && val.length > 0) {
+      typed = true;
+      pulse('methods');
+      status.textContent = '✏️ Method active — typing character by character';
+      setProgress(50);
+    }
+
+    // Update progress as user types toward "Hello"
+    if (val.length > 0 && val.length <= TARGET.length) {
+      setProgress(50 + (len / TARGET.length) * 25);
+    }
+
+    // Enable submit only when exact match
+    const match = val === TARGET;
+    submitBtn.disabled = !match;
+    if (match) {
+      input.classList.add('done');
+      status.textContent = '✅ "Hello" matched — submit to complete the task';
+      setProgress(75, '#f4a261');
+    } else {
+      input.classList.remove('done');
+    }
+  }
+
+  function onSubmit() {
+    if (submitted) return;
+    submitted = true;
+
+    // SELECTION fires — user chose to confirm via the Submit button (not Enter key)
+    pulse('selection');
+    submitBtn.disabled = true;
+    input.disabled = true;
+    status.style.background  = 'rgba(42,157,143,0.08)';
+    status.style.borderColor = '#2a9d8f';
+    status.textContent = '🎯 Selection complete — Submit button chosen over Enter key to confirm';
+    setProgress(100, '#2a9d8f');
+  }
+
+  function onReset() {
+    submitted = false;
+    focused   = false;
+    typed     = false;
+
+    input.value    = '';
+    input.disabled = false;
+    input.classList.remove('done');
+    submitBtn.disabled = true;
+
+    status.style.background  = '';
+    status.style.borderColor = '';
+    status.textContent = 'Click the input field above to begin…';
+
+    charCount.textContent = '0 / 5 characters';
+    charCount.className   = 'char-count';
+
+    setProgress(0, '#1a1a1a');
+
+    // Reset tags — only Goal stays active
+    ['operators','methods','selection'].forEach(id => {
+      document.getElementById('tag-' + id).classList.remove('active','glow');
+    });
+  }
+</script>
+</body>
+</html>

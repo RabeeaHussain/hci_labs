@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue:   #0066ff;
+      --green:  #00c853;
+      --yellow: #ffd600;
+      --red:    #ff1744;
+      --purple: #aa00ff;
+      --bg:     #0a0a0f;
+      --surface:#12121a;
+      --border: #1e1e2e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Space Mono', monospace;
+      background: var(--bg);
+      color: #e8e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .lab-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .lab-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .lab-header p {
+      font-size: 0.65rem;
+      color: #555;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .demo-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* Tags */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .principle-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.35;
+      transition: opacity 0.3s, background 0.3s, border-color 0.3s;
+    }
+    .principle-tag .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: box-shadow 0.3s;
+    }
+    .principle-tag.active     { opacity: 1; border-color: rgba(var(--cr), 0.3); background: rgba(var(--cr), 0.08); }
+    .principle-tag.glow .dot  { box-shadow: 0 0 8px var(--c); }
+
+    .tag-affordance { --c: var(--blue);   --cr: 0,102,255; }
+    .tag-mapping    { --c: var(--green);  --cr: 0,200,83;  }
+    .tag-feedback   { --c: var(--yellow); --cr: 255,214,0; }
+    .tag-constraint { --c: var(--red);    --cr: 255,23,68; }
+    .tag-signifier  { --c: var(--purple); --cr: 170,0,255; }
+    .principle-tag .dot { background: var(--c); }
+
+    /* Button */
+    #actionBtn {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      background: transparent;
+      color: var(--blue);
+      border: 2px solid var(--blue);
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.25s;
+      margin-bottom: 14px;
+    }
+    #actionBtn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--blue);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+      z-index: 0;
+    }
+    #actionBtn span { position: relative; z-index: 1; }
+    #actionBtn:hover:not(:disabled)::before { transform: scaleX(1); }
+    #actionBtn:hover:not(:disabled) { color: #fff; }
+    #actionBtn:active:not(:disabled) { transform: scale(0.97); }
+    #actionBtn:disabled { border-color: var(--purple); color: var(--purple); opacity: 0.55; cursor: not-allowed; }
+    #actionBtn:disabled::before { display: none; }
+
+    /* Ripple */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      width: 60px; height: 60px;
+      background: rgba(255,214,0,0.35);
+      animation: rippleOut 0.6s ease-out forwards;
+      pointer-events: none;
+      z-index: 2;
+    }
+    @keyframes rippleOut {
+      from { transform: scale(0); opacity: 1; }
+      to   { transform: scale(4); opacity: 0; }
+    }
+
+    /* Float */
+    .click-float {
+      position: fixed;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--yellow);
+      pointer-events: none;
+      animation: floatUp 0.9s ease-out forwards;
+      z-index: 999;
+    }
+    @keyframes floatUp {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(-50px); }
+    }
+
+    /* Status */
+    #status {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      font-size: 0.75rem;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      transition: border-color 0.4s, background 0.4s;
+      margin-bottom: 14px;
+    }
+
+    /* Progress */
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.58rem;
+      color: #555;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .progress-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      background: var(--blue);
+      transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.4s;
+    }
+  </style>
+</head>
+<body>
+
+<div class="lab-header">
+  <h1>HCI Principles Lab</h1>
+  <p>Interactive Design Demonstration</p>
+</div>
+
+<div class="demo-container">
+
+  <div class="principles-grid">
+    <div class="principle-tag tag-affordance active" id="tag-affordance"><div class="dot"></div> Affordance</div>
+    <div class="principle-tag tag-mapping"           id="tag-mapping">   <div class="dot"></div> Mapping</div>
+    <div class="principle-tag tag-feedback"          id="tag-feedback">  <div class="dot"></div> Feedback</div>
+    <div class="principle-tag tag-constraint"        id="tag-constraint"><div class="dot"></div> Constraint</div>
+    <div class="principle-tag tag-signifier"         id="tag-signifier"> <div class="dot"></div> Signifier</div>
+  </div>
+
+  <button id="actionBtn" onclick="performAction(event)">
+    <span>Process Data</span>
+  </button>
+
+  <div id="status">Awaiting interaction</div>
+
+  <div style="margin-top:14px">
+    <div class="progress-label">
+      <span>Click usage</span>
+      <span id="countLabel">0 / 3</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let count = 0;
+  const MAX = 3;
+  const btn    = document.getElementById('actionBtn');
+  const status = document.getElementById('status');
+  const bar    = document.getElementById('progressBar');
+  const label  = document.getElementById('countLabel');
+
+  function pulse(id, delay = 0) {
+    setTimeout(() => {
+      const el = document.getElementById('tag-' + id);
+      el.classList.add('active', 'glow');
+      setTimeout(() => el.classList.remove('glow'), 700);
+    }, delay);
+  }
+
+  function performAction(e) {
+    count++;
+
+    // Ripple
+    const rect = btn.getBoundingClientRect();
+    const rip  = document.createElement('div');
+    rip.className = 'ripple';
+    rip.style.left = (e.clientX - rect.left - 30) + 'px';
+    rip.style.top  = (e.clientY - rect.top  - 30) + 'px';
+    btn.appendChild(rip);
+    setTimeout(() => rip.remove(), 700);
+
+    // Float
+    const fl = document.createElement('div');
+    fl.className   = 'click-float';
+    fl.textContent = '+1 click';
+    fl.style.left  = e.clientX + 'px';
+    fl.style.top   = (e.clientY - 10) + 'px';
+    document.body.appendChild(fl);
+    setTimeout(() => fl.remove(), 900);
+
+    // Progress
+    bar.style.width = (count / MAX * 100) + '%';
+    label.textContent = `${count} / ${MAX}`;
+    if (count === 2) bar.style.background = 'var(--yellow)';
+    if (count >= MAX) bar.style.background = 'var(--red)';
+
+    // Status
+    status.style.background  = count < MAX ? 'rgba(0,200,83,0.08)'  : 'rgba(255,23,68,0.08)';
+    status.style.borderColor = count < MAX ? '#00c853' : '#ff1744';
+    status.textContent = count < MAX
+      ? ` Processed ${count} time${count !== 1 ? 's' : ''}  ${MAX - count} remaining`
+      : ' Limit reached (3 / 3)';
+
+    pulse('feedback', 0);
+    pulse('mapping',  200);
+
+    if (count >= MAX) {
+      btn.disabled = true;
+      pulse('constraint', 400);
+      pulse('signifier',  650);
+    }
+  }
+
+  btn.addEventListener('mouseenter', () => pulse('affordance'));
+</script>
+</body>
+</html>

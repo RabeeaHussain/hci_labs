@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HCI Principles Lab</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="lab-header">
+    <h1>HCI Principles Lab</h1>
+    <p>Interactive Design Demonstration</p>
+  </div>
+
+  <div class="demo-container">
+
+    <div class="principles-grid">
+      <div class="principle-tag tag-affordance active" id="tag-affordance"><div class="dot"></div> Affordance</div>
+      <div class="principle-tag tag-mapping"           id="tag-mapping">   <div class="dot"></div> Mapping</div>
+      <div class="principle-tag tag-feedback"          id="tag-feedback">  <div class="dot"></div> Feedback</div>
+      <div class="principle-tag tag-constraint"        id="tag-constraint"><div class="dot"></div> Constraint</div>
+      <div class="principle-tag tag-signifier"         id="tag-signifier"> <div class="dot"></div> Signifier</div>
+    </div>
+
+    <button id="actionBtn">
+      <span>Process Data</span>
+    </button>
+
+    <div id="status">Awaiting interaction</div>
+
+    <div style="margin-top:14px">
+      <div class="progress-label">
+        <span>Click usage</span>
+        <span id="countLabel">0 / 3</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

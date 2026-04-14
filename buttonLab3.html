@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HCI Button Lab</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      width: min(520px, 100%);
+      text-align: center;
+      padding: 24px;
+      border: 1px solid #d6dcdf;
+      border-radius: 18px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(31, 41, 55, 0.08);
+    }
+
+    h1 {
+      margin-bottom: 18px;
+      font-size: 1.8rem;
+      letter-spacing: -0.03em;
+    }
+
+    #actionBtn {
+      width: 100%;
+      max-width: 280px;
+      margin: 18px auto 10px;
+      padding: 18px 28px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      color: #ffffff;
+      background: #2563eb;
+      cursor: pointer;
+      transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    #actionBtn:hover {
+      transform: translateY(-2px);
+      background: #1d4ed8;
+      box-shadow: 0 14px 24px rgba(37, 99, 235, 0.22);
+    }
+
+    #actionBtn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 14px rgba(37, 99, 235, 0.18);
+    }
+
+    #status {
+      min-height: 42px;
+      margin-bottom: 16px;
+      font-size: 0.98rem;
+      color: #374151;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+      font-size: 0.95rem;
+      color: #4b5563;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 10px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #2563eb;
+      transition: width 0.28s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>HCI Button Lab</h1>
+
+    <p id="status">Awaiting interaction</p>
+
+    <button id="actionBtn" onclick="performAction()">Process Data</button>
+
+    <div class="progress-row">
+      <span>Click usage</span>
+      <span id="countLabel">0 / 3</span>
+    </div>
+
+    <div class="progress-track">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    let count = 0;
+    const MAX = 3;
+    const btn = document.getElementById('actionBtn');
+    const status = document.getElementById('status');
+    const bar = document.getElementById('progressBar');
+    const label = document.getElementById('countLabel');
+
+    function performAction() {
+      count = Math.min(MAX, count + 1);
+
+      bar.style.width = (count / MAX * 100) + '%';
+      label.textContent = `${count} / ${MAX}`;
+
+      status.textContent = count < MAX
+        ? `Processed ${count} time${count !== 1 ? 's' : ''} — ${MAX - count} remaining`
+        : 'Limit reached (3 / 3)';
+
+      if (count >= MAX) {
+        btn.disabled = true;
+        btn.style.background = '#94a3b8';
+        btn.style.cursor = 'not-allowed';
+      }
+    }
+  </script>
+</body>
+</html>
