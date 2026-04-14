@@ -1,0 +1,16 @@
+.character-container {
+  will-change: transform;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Optional: Add a soft shadow under her feet */
+.character-container::after {
+  content: '';
+  width: 40px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  margin-top: -5px;
+}

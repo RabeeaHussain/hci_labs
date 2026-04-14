@@ -1,0 +1,6 @@
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  font-size: 16px;
+  filter: drop-shadow(0 0 3px #FFD700);
+}
